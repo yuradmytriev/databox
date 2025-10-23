@@ -1,0 +1,13 @@
+services:
+  playwright:
+    build:
+      context: .
+      dockerfile: Dockerfile.playwright
+    environment:
+      - CI=true
+    volumes:
+      - ./tests:/app/tests
+      - ./playwright.config.ts:/app/playwright.config.ts
+      - ./playwright-report:/app/playwright-report
+      - ./test-results:/app/test-results
+    ipc: host

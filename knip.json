@@ -1,0 +1,27 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "include": [
+    "files",
+    "types",
+    "duplicates",
+    "exports",
+    "classMembers",
+    "unresolved",
+    "nsExports",
+    "enumMembers",
+    "nsTypes"
+  ],
+  "entry": ["src/main.tsx"],
+  "project": ["src/**/*.{ts,tsx}"],
+  "ignore": ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "tests/**", "playwright.config.ts", "src/ui/**"],
+  "ignoreBinaries": ["npm-check", "wrangler"],
+  "ignoreDependencies": [
+    "stylelint-config-standard",
+    "babel-plugin-react-compiler",
+    "eslint-plugin-eslint-plugin"
+  ],
+  "ignoreExportsUsedInFile": {
+    "interface": true,
+    "type": true
+  }
+}

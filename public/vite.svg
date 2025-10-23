@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 24 24" fill="none">
+  <title>Dataroom Icon — Solid</title>
+  <rect x="1" y="1" width="22" height="22" rx="5" fill="#0F172A"/>
+  <g transform="translate(3 5)">
+    <!-- Folder -->
+    <path d="M2 3.5C2 2.67157 2.67157 2 3.5 2H6.586c.265 0 .52.105.707.293l1.121 1.121c.188.187.442.293.707.293H13c.828 0 1.5.6716 1.5 1.5V11c0 .828-.672 1.5-1.5 1.5H3.5C2.672 12.5 2 11.828 2 11V3.5Z" fill="#1f2937"/>
+    <!-- Vault circle -->
+    <circle cx="8.5" cy="7.75" r="3.25" fill="#22d3ee"/>
+    <!-- Keyhole -->
+    <path d="M8.5 6.25c.69 0 1.25.56 1.25 1.25 0 .47-.26.88-.65 1.1v1.15h-1.2V8.6c-.39-.22-.65-.63-.65-1.1 0-.69.56-1.25 1.25-1.25Z" fill="#0F172A"/>
+    <!-- Ring -->
+    <circle cx="8.5" cy="7.75" r="3.25" fill="none" stroke="#0ea5e9" stroke-width="0.8"/>
+  </g>
+</svg>
