@@ -15,7 +15,7 @@ So here's what I built for this demo:
 - Zip or single-file download
 - Move between folders and datarooms
 - Drag-and-drop support
-- Single or multi-delete with **undo**
+- Single or multi-delete with undo
 
 ### 1.2 Folder Operations
 
