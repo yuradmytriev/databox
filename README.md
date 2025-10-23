@@ -151,3 +151,9 @@ Here's what it looks like:
 - Tree-view sidebar (better than breadcrumbs for deep hierarchies in my opinion)
 - Real auth provider (production OIDC issuer)
 - Error monitoring (Sentry / New Relic)
+
+## How to run in dev mode
+
+- curl https://get.volta.sh | bash (optional but good to get the latest node version)
+- pnpm install
+- pnpm dev
