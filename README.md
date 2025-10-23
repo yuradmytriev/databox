@@ -1,18 +1,69 @@
 # DataBox
 
+Link: https://databox-af6.pages.dev/ (used github action for testing and deployment to cloudflare)
+
 ![DataRoom Demo](./records/demo.gif)
 
 So here's what I built for this demo:
 
-## The Core Data Structure
+## 1. Functional Requirements
 
-First challenge was figuring out the right way to handle file/folder operations without the usual tree recursion headaches. Went with a normalized graph structure - basically all files and folders live in a flat object and we just track relationships with IDs.
+### 1.1 File Operations
 
-Why this works better:
-- Lookups are O(1) instead of having to traverse the whole tree
-- Way easier to serialize for storage
-- No circular reference issues
-- Move operations are just updating a few pointers
+- Single or bulk upload
+- Rename
+- Zip or single-file download
+- Move between folders and datarooms
+- Drag-and-drop support
+- Single or multi-delete with **undo**
+
+### 1.2 Folder Operations
+
+- Nested folder structure
+- Drag-and-drop
+- Move between datarooms
+
+### 1.3 Context Actions
+
+- Right-click menu and/or kebab (⋮) menu
+
+### 1.4 File Preview
+
+- Modal viewer
+
+### 1.5 Recent Files
+
+- List view with quick preview
+
+### 1.6 Search & Sort
+
+- Basic filters and ordering
+
+### 1.7 Authentication
+
+- Basic sign-in / sign-up form
+
+### 1.8 Keyboard Shortcuts
+
+- Common actions: rename, delete, undo, etc.
+
+---
+
+## 2. Non-Functional Requirements
+
+### 2.1 Offline Mode
+
+- PWA (Vite plugin) + IndexedDB (Dexie) maybe our client will find this useful in airplane mode :)
+
+---
+
+## 3. Core Architecture
+
+### 3.1 Data Model (The core layer was a main focus for this task because the app's performance and UI integration depend on it.)
+
+- **Normalized graph:** flat map of nodes (files/folders)
+- Uses `parentId` / `childrenIds` for hierarchy
+- **Benefits:** O(1) lookups, easy serialization, no circular references, cheap moves (pointer updates)
 
 Here's what it looks like:
 
@@ -47,50 +98,56 @@ Here's what it looks like:
 }
 ```
 
-Moving a file? Just update its `parentId` and the parent's `childrenIds` array. No tree traversal needed.
+### 3.2 Storage Layer
 
-## Storage Layer
+- IndexedDB via Dexie
+- Dependency injection for data layer (to swap with backend later)
 
-Picked IndexedDB for local storage. It's kinda painful to work with directly so I'm using Dexie.js as a wrapper.
+### 3.3 React Service Layer
 
-Built the data layer with dependency injection so we can swap it out later if needed (like moving to a real backend). IndexedDB also has some nice permission features built in which pairs well with auth - important for an MVP.
+- **React Query** to integrate service layer (e.g., IndexedDB)
+- Handles loading, error states, and synchronization
 
-## React Setup
+---
 
-Using React Query to connect everything. It handles all the loading states and cache invalidation which saves a ton of boilerplate.
+## 4. Performance
 
-## PDF Rendering
+- `pdf.js` + Web Worker to avoid blocking the main thread with large files (since we use blob instead of URL)
+- Added virtualization for file explorer list (no important for MVP and stiil ot sure how many files can be in the folder)
 
-PDFs can get pretty heavy so I'm using pdf.js with a web worker to keep rendering off the main thread. Otherwise large files would freeze the UI.
+---
 
-## Auth
+## 5. Authentication
 
-Was gonna use Clerk initially but didn't want the vendor lock-in. Set up OIDC instead with some mocks for dev - more flexible if we need to switch providers later.
+- OIDC (mocked in development)
+- Avoid vendor lock-in by not tying to a specific SDK
 
-## Error Handling
+---
 
-Built a simple Logger class as a facade - makes it easy to plug in Sentry or New Relic down the road without touching every error call.
+## 6. Error Handling
 
-## State
+- Logger facade (Sentry / New Relic pluggable later)
+- Handles broken files, size-limit errors, and rendering issues
 
-Went with Zustand for state management. Way simpler than Redux and not as magical as MobX.
+---
 
-## What's Actually Working
+## 8. Edge Cases
 
-Main focus was getting the data layer right, so skipped some UI stuff like permissions, sharing, and activity logs for now.
+- **Long file names:** no hard validation; just truncate in UI
+- **Corrupt or unreadable files:** show in preview error message about it
 
-Current features:
-- Create files/folders (buttons or drag-and-drop)
-- Move stuff between folders and data rooms
-- Error handling for broken files or size limits (added some test PDFs to break things)
-- Breadcrumb navigation (tree view would be better but ran out of time)
-- Recent files panel - nice for switching between docs quickly, similar to macOS
+---
 
-## What's Missing / TODO
+## 9. Testing
 
-- Permissions & file sharing (pretty important lol)
-- Tree view sidebar for navigation
-- Real auth provider integration
-- Proper error monitoring setup
-- Undo/redo keyboard shortcuts (Cmd+Z)
-- Configurable undo timeout
+- **Core logic:** unit tests (`DataRoomCore`, `DexieDataRoomManager`) with plain TypeScript
+- **UI:** Playwright I used just for development convenience. + manual edge-case testing with recordings
+
+---
+
+## 10. What’s Missing / TODO
+
+- Permissions & sharing
+- Tree-view sidebar (better than breadcrumbs for deep hierarchies in my opinion)
+- Real auth provider (production OIDC issuer)
+- Error monitoring (Sentry / New Relic)
