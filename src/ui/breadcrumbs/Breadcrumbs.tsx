@@ -1,10 +1,19 @@
-import { Box, ChevronRight, MoreHorizontal } from "lucide-react";
+import { Box } from "lucide-react";
 import { useMemo } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import type { DataRoomNode } from "@/types/dataroom";
 import { useAuth } from "@/lib/auth/use-auth";
 import { useDataRoom, usePath } from "@/lib/hooks/dataroom";
 import { truncateFileName } from "@/lib/utils";
+import {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/ui/breadcrumb";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,109 +71,119 @@ export const Breadcrumbs = () => {
     return null;
   }
 
-  const renderBreadcrumbItem = (
-    node: DataRoomNode,
-    _index: number,
-    isLast: boolean,
-  ) => {
+  const renderBreadcrumbItem = (node: DataRoomNode, isLast: boolean) => {
     const pathIds = path!
       .slice(0, path!.indexOf(node) + 1)
       .map((pathNode) => pathNode.id);
     const nodePath = pathIds.join("/");
 
     return (
-      <div key={node.id} className="flex items-center gap-2">
-        <ChevronRight className="h-4 w-4 shrink-0" />
-        <Link
-          to={`/dataroom/${dataRoomId}/folder/${nodePath}`}
-          className={`hover:text-foreground transition-colors cursor-pointer truncate ${
-            isLast ? "text-foreground font-medium" : ""
-          }`}
-          title={node.name.trim()}
-        >
-          {truncateFileName(node.name.trim())}
-        </Link>
-      </div>
+      <BreadcrumbItem key={node.id}>
+        {isLast ? (
+          <BreadcrumbPage title={node.name.trim()}>
+            {truncateFileName(node.name.trim())}
+          </BreadcrumbPage>
+        ) : (
+          <>
+            <BreadcrumbLink asChild>
+              <Link
+                to={`/dataroom/${dataRoomId}/folder/${nodePath}`}
+                title={node.name.trim()}
+              >
+                {truncateFileName(node.name.trim())}
+              </Link>
+            </BreadcrumbLink>
+            <BreadcrumbSeparator />
+          </>
+        )}
+      </BreadcrumbItem>
     );
   };
 
   return (
-    <div
-      className="flex items-center gap-2 text-sm text-muted-foreground py-3 px-6 border-b overflow-x-auto"
-      data-testid="breadcrumbs"
-    >
-      <Link
-        to={`/dataroom/${dataRoomId}`}
-        className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer shrink-0"
-      >
-        <Box className="h-4 w-4" />
-        <span title={dataRoomName}>{truncateFileName(dataRoomName)}</span>
-      </Link>
+    <div className="py-3 px-6 border-b" data-testid="breadcrumbs">
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link
+                to={`/dataroom/${dataRoomId}`}
+                className="flex items-center gap-1"
+                title={dataRoomName}
+              >
+                <Box className="h-4 w-4" />
+                <span>{truncateFileName(dataRoomName)}</span>
+              </Link>
+            </BreadcrumbLink>
+            {path && path.length > 0 && <BreadcrumbSeparator />}
+          </BreadcrumbItem>
 
-      {path && path.length > 0 && (
-        <>
-          {!shouldCollapse ? (
-            // Show all items when path is short
-            path.map((node, index) =>
-              renderBreadcrumbItem(node, index, index === path.length - 1),
-            )
-          ) : (
-            // Show collapsed view with dropdown for middle items
+          {path && path.length > 0 && (
             <>
-              {visiblePath &&
-                "startItems" in visiblePath &&
-                visiblePath.startItems.map((node, index) =>
-                  renderBreadcrumbItem(node, index, false),
-                )}
+              {!shouldCollapse ? (
+                // Show all items when path is short
+                path.map((node, index) =>
+                  renderBreadcrumbItem(node, index === path.length - 1),
+                )
+              ) : (
+                // Show collapsed view with dropdown for middle items
+                <>
+                  {visiblePath &&
+                    "startItems" in visiblePath &&
+                    visiblePath.startItems.map((node) =>
+                      renderBreadcrumbItem(node, false),
+                    )}
 
-              <div className="flex items-center gap-2 shrink-0">
-                <ChevronRight className="h-4 w-4" />
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer rounded px-2 py-1 hover:bg-accent"
-                    aria-label="Show hidden breadcrumb items"
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start">
-                    {visiblePath &&
-                      "collapsedItems" in visiblePath &&
-                      visiblePath.collapsedItems.map((node) => {
-                        const pathIds = path
-                          .slice(0, path.indexOf(node) + 1)
-                          .map((pathNode) => pathNode.id);
-                        const nodePath = pathIds.join("/");
-                        return (
-                          <DropdownMenuItem key={node.id} asChild>
-                            <Link
-                              to={`/dataroom/${dataRoomId}/folder/${nodePath}`}
-                              className="cursor-pointer"
-                              title={node.name.trim()}
-                            >
-                              <span className="truncate max-w-[250px]">
-                                {node.name.trim()}
-                              </span>
-                            </Link>
-                          </DropdownMenuItem>
-                        );
-                      })}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+                  <BreadcrumbItem>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        className="flex h-9 w-9 items-center justify-center"
+                        aria-label="Show hidden breadcrumb items"
+                      >
+                        <BreadcrumbEllipsis className="h-4 w-4" />
+                        <span className="sr-only">Toggle menu</span>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        {visiblePath &&
+                          "collapsedItems" in visiblePath &&
+                          visiblePath.collapsedItems.map((node) => {
+                            const pathIds = path
+                              .slice(0, path.indexOf(node) + 1)
+                              .map((pathNode) => pathNode.id);
+                            const nodePath = pathIds.join("/");
+                            return (
+                              <DropdownMenuItem key={node.id} asChild>
+                                <Link
+                                  to={`/dataroom/${dataRoomId}/folder/${nodePath}`}
+                                  className="cursor-pointer"
+                                  title={node.name.trim()}
+                                >
+                                  <span className="truncate max-w-[250px]">
+                                    {node.name.trim()}
+                                  </span>
+                                </Link>
+                              </DropdownMenuItem>
+                            );
+                          })}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <BreadcrumbSeparator />
+                  </BreadcrumbItem>
 
-              {visiblePath &&
-                "endItems" in visiblePath &&
-                visiblePath.endItems.map((node, index) =>
-                  renderBreadcrumbItem(
-                    node,
-                    index,
-                    index === visiblePath.endItems.length - 1,
-                  ),
-                )}
+                  {visiblePath &&
+                    "endItems" in visiblePath &&
+                    visiblePath.endItems.map((node, index) =>
+                      renderBreadcrumbItem(
+                        node,
+                        index === visiblePath.endItems.length - 1,
+                      ),
+                    )}
+                </>
+              )}
             </>
           )}
-        </>
-      )}
+        </BreadcrumbList>
+      </Breadcrumb>
     </div>
   );
 };
