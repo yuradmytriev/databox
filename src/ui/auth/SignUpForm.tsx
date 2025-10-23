@@ -37,7 +37,12 @@ export const SignUpForm = ({ onSuccess, onBackToLogin }: SignUpFormProps) => {
 
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    const success = MockAuthService.signUp(username, password, username, `${username}@dataroom.local`);
+    const success = MockAuthService.signUp(
+      username,
+      password,
+      username,
+      `${username}@dataroom.local`,
+    );
 
     if (success) {
       toast.success("Account created successfully! Please sign in.");

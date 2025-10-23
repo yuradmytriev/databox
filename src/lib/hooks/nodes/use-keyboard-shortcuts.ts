@@ -17,10 +17,18 @@ export const useKeyboardShortcuts = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent): void => {
+      // Ignore keyboard shortcuts when typing in input fields
+      const target = e.target as HTMLElement;
+      const isInputField =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable;
+
       // TODO: Add Cmd+Z/Ctrl+Z for undo operations
       if (
         (e.key === "Backspace" || e.key === "Delete") &&
-        selectedNodeIds.size > 0
+        selectedNodeIds.size > 0 &&
+        !isInputField
       ) {
         e.preventDefault();
         onBulkDelete();

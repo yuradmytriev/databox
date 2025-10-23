@@ -1,9 +1,16 @@
 import { Search, X } from "lucide-react";
 import { useFilterStore } from "@/state/filter";
+import { useDataRoomUIStore } from "@/state/ui/dataroom-ui";
 import { Input } from "@/ui/input";
 
 export const FileSearch = () => {
   const { searchQuery, setSearchQuery } = useFilterStore();
+  const clearSelection = useDataRoomUIStore((state) => state.clearSelection);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    clearSelection();
+  };
 
   return (
     <div className="relative flex-1 max-w-md">
@@ -12,7 +19,7 @@ export const FileSearch = () => {
         type="text"
         placeholder="Search files and folders..."
         value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        onChange={handleSearchChange}
         className="pl-9 pr-9"
       />
       {searchQuery && (

@@ -38,9 +38,6 @@ export const FileList = ({ nodes, onStartEditing }: FileListProps) => {
   const toggleNodeSelection = useDataRoomUIStore(
     (state) => state.toggleNodeSelection,
   );
-  const setViewingFileId = useDataRoomUIStore(
-    (state) => state.setViewingFileId,
-  );
   const parentRef = useRef<HTMLDivElement>(null);
 
   // Using virtualization for better performance with large file lists
