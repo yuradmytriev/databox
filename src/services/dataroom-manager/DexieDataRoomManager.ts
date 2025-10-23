@@ -52,6 +52,27 @@ export class DexieDataRoomManager implements IDataRoomManager {
       this.db = userIdOrDatabase ?? createDefaultDb();
     }
   }
+  private generateUniqueDataRoomName(
+    baseName: string,
+    existingDataRooms: DataRoom[],
+  ): string {
+    const existingNames = new Set(existingDataRooms.map((dr) => dr.name));
+
+    if (!existingNames.has(baseName)) {
+      return baseName;
+    }
+
+    let counter = 1;
+    let newName = `${baseName} (${counter})`;
+
+    while (existingNames.has(newName)) {
+      counter++;
+      newName = `${baseName} (${counter})`;
+    }
+
+    return newName;
+  }
+
   private async withDataRoom<T>(
     dataRoomId: string,
     operation: (core: DataRoomCore, dataRoom: DataRoom) => T,
@@ -92,9 +113,15 @@ export class DexieDataRoomManager implements IDataRoomManager {
       const id = `dr-${nanoid()}`;
       const timestamp = dateManager.now();
 
+      const existingDataRooms = await this.getDataRoomsByOwner(ownerId);
+      const uniqueName = this.generateUniqueDataRoomName(
+        name,
+        existingDataRooms,
+      );
+
       const dataRoom: DataRoom = {
         id,
-        name,
+        name: uniqueName,
         ownerId,
         createdAt: timestamp,
         updatedAt: timestamp,
@@ -102,7 +129,7 @@ export class DexieDataRoomManager implements IDataRoomManager {
       };
 
       await this.db.datarooms.add(dataRoom);
-      logger.info("DataRoom created", { dataRoomId: id, name });
+      logger.info("DataRoom created", { dataRoomId: id, name: uniqueName });
 
       return dataRoom;
     } catch (error) {

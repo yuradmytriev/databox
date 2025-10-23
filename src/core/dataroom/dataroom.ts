@@ -53,9 +53,15 @@ export class DataRoomCore {
     const id = this.generateId();
     const timestamp = dateManager.now();
 
+    const siblings = input.parentId
+      ? this.getChildren(input.parentId)
+      : this.getRootNodes();
+
+    const uniqueName = this.generateUniqueName(input.name.trim(), siblings);
+
     const folder: FolderNode = {
       id,
-      name: input.name.trim(),
+      name: uniqueName,
       type: "folder",
       parentId: input.parentId,
       childrenIds: [],
@@ -80,9 +86,15 @@ export class DataRoomCore {
     const id = this.generateId();
     const timestamp = dateManager.now();
 
+    const siblings = input.parentId
+      ? this.getChildren(input.parentId)
+      : this.getRootNodes();
+
+    const uniqueName = this.generateUniqueName(input.name.trim(), siblings);
+
     const file: FileNode = {
       id,
-      name: input.name.trim(),
+      name: uniqueName,
       type: "file",
       parentId: input.parentId,
       size: input.file.size,
