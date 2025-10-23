@@ -4,23 +4,32 @@ import { MockAuthService } from "@/lib/auth/mock-auth";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 
-interface LoginFormProps {
+interface SignUpFormProps {
   onSuccess: () => void;
-  onSignUpClick: () => void;
+  onBackToLogin: () => void;
 }
 
-export const LoginForm = ({ onSuccess, onSignUpClick }: LoginFormProps) => {
+export const SignUpForm = ({ onSuccess, onBackToLogin }: SignUpFormProps) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
-  const demoUsers = MockAuthService.getDemoUsers();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (!username || !password) {
-      toast.error("Please enter username and password");
+    if (!username || !password || !confirmPassword) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 4) {
+      toast.error("Password must be at least 4 characters");
       return;
     }
 
@@ -28,21 +37,16 @@ export const LoginForm = ({ onSuccess, onSignUpClick }: LoginFormProps) => {
 
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    const success = MockAuthService.signIn(username, password);
+    const success = MockAuthService.signUp(username, password, username, `${username}@dataroom.local`);
 
     if (success) {
-      toast.success("Signed in successfully");
+      toast.success("Account created successfully! Please sign in.");
       onSuccess();
     } else {
-      toast.error("Invalid username or password");
+      toast.error("Username already exists");
     }
 
     setIsLoading(false);
-  };
-
-  const handleQuickLogin = (user: string, pass: string) => {
-    setUsername(user);
-    setPassword(pass);
   };
 
   return (
@@ -50,7 +54,7 @@ export const LoginForm = ({ onSuccess, onSignUpClick }: LoginFormProps) => {
       <div className="w-full max-w-md p-8 bg-card rounded-lg border shadow-lg">
         <div className="mb-6 text-center">
           <h1 className="text-3xl font-bold mb-2">DataRoom</h1>
-          <p className="text-muted-foreground">Sign in to continue</p>
+          <p className="text-muted-foreground">Create your account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -64,7 +68,7 @@ export const LoginForm = ({ onSuccess, onSignUpClick }: LoginFormProps) => {
             <Input
               id="username"
               type="text"
-              placeholder="Enter username"
+              placeholder="Choose a username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               disabled={isLoading}
@@ -82,61 +86,46 @@ export const LoginForm = ({ onSuccess, onSignUpClick }: LoginFormProps) => {
             <Input
               id="password"
               type="password"
-              placeholder="Enter password"
+              placeholder="Choose a password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
-              autoComplete="current-password"
+              autoComplete="new-password"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="confirmPassword"
+              className="text-sm font-medium block mb-1"
+            >
+              Confirm Password
+            </label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              placeholder="Confirm your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={isLoading}
+              autoComplete="new-password"
             />
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign In"}
+            {isLoading ? "Creating account..." : "Sign Up"}
           </Button>
         </form>
 
-        <div className="mt-6 p-4 bg-muted/40 rounded">
-          <p className="text-sm font-medium mb-3">Demo Accounts:</p>
-          <div className="space-y-2">
-            {demoUsers.map((user) => (
-              <div
-                key={user.username}
-                className="flex items-center justify-between p-2 bg-background rounded hover:bg-accent transition-colors cursor-pointer"
-                onClick={() => handleQuickLogin(user.username, user.username)}
-              >
-                <div>
-                  <p className="text-sm font-medium">{user.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    Username: {user.username} | Password: {user.username}
-                  </p>
-                  <div className="flex gap-1 mt-1">
-                    {user.roles.map((role) => (
-                      <span
-                        key={role}
-                        className="text-xs px-1.5 py-0.5 bg-primary/10 text-primary rounded"
-                      >
-                        {role}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <Button size="sm" variant="ghost" type="button">
-                  Quick Login
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
-
         <div className="mt-6 text-center">
           <p className="text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            Already have an account?{" "}
             <button
-              onClick={onSignUpClick}
+              onClick={onBackToLogin}
               className="text-primary hover:underline font-medium"
               type="button"
             >
-              Sign Up
+              Sign In
             </button>
           </p>
         </div>

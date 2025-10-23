@@ -1,9 +1,11 @@
 import { LogIn } from "lucide-react";
+import { useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import { useAuth } from "@/lib/auth/use-auth";
 import { DataRoomManagerProvider } from "@/services/dataroom-manager/DataRoomManagerProvider";
 import { LoginForm } from "@/ui/auth/LoginForm";
+import { SignUpForm } from "@/ui/auth/SignUpForm";
 import { Button } from "@/ui/button";
 import { DataRoomView } from "@/ui/dataroom/DataRoomView";
 import { RootLayout } from "@/ui/layouts/RootLayout";
@@ -12,6 +14,7 @@ const USE_MOCK_AUTH = import.meta.env.VITE_USE_MOCK_AUTH !== "false";
 
 const App = () => {
   const { user, isLoading, isAuthenticated, signIn, refreshAuth } = useAuth();
+  const [showSignUp, setShowSignUp] = useState(false);
 
   if (isLoading) {
     return (
@@ -28,11 +31,25 @@ const App = () => {
     if (USE_MOCK_AUTH) {
       return (
         <>
-          <LoginForm
-            onSuccess={() => {
-              if (refreshAuth) refreshAuth();
-            }}
-          />
+          {showSignUp ? (
+            <SignUpForm
+              onSuccess={() => {
+                setShowSignUp(false);
+              }}
+              onBackToLogin={() => {
+                setShowSignUp(false);
+              }}
+            />
+          ) : (
+            <LoginForm
+              onSuccess={() => {
+                if (refreshAuth) refreshAuth();
+              }}
+              onSignUpClick={() => {
+                setShowSignUp(true);
+              }}
+            />
+          )}
           <Toaster position="bottom-right" />
         </>
       );

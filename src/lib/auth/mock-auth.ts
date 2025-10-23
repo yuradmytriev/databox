@@ -14,16 +14,6 @@ interface MockUser {
 
 const MOCK_USERS: MockUser[] = [
   {
-    username: "admin",
-    password: "admin",
-    profile: {
-      sub: "admin-001",
-      name: "Admin User",
-      email: "admin@dataroom.local",
-      roles: ["admin", "user"],
-    },
-  },
-  {
     username: "alice",
     password: "alice",
     profile: {
@@ -36,10 +26,53 @@ const MOCK_USERS: MockUser[] = [
 ];
 
 const STORAGE_KEY = "mock_oidc_user";
+const USERS_STORAGE_KEY = "mock_users";
 
 export class MockAuthService {
+  static getStoredUsers(): MockUser[] {
+    const stored = localStorage.getItem(USERS_STORAGE_KEY);
+    if (!stored) {
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(MOCK_USERS));
+      return MOCK_USERS;
+    }
+    try {
+      return JSON.parse(stored) as MockUser[];
+    } catch {
+      return MOCK_USERS;
+    }
+  }
+
+  static signUp(
+    username: string,
+    password: string,
+    name: string,
+    email: string,
+  ): boolean {
+    const users = this.getStoredUsers();
+
+    if (users.some((user) => user.username === username)) {
+      return false;
+    }
+
+    const newUser: MockUser = {
+      username,
+      password,
+      profile: {
+        sub: `user-${Date.now()}`,
+        name,
+        email,
+        roles: ["user"],
+      },
+    };
+
+    users.push(newUser);
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+    return true;
+  }
+
   static signIn(username: string, password: string): boolean {
-    const user = MOCK_USERS.find(
+    const users = this.getStoredUsers();
+    const user = users.find(
       (mockUser) =>
         mockUser.username === username && mockUser.password === password,
     );
