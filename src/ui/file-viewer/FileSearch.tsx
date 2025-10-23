@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { Search, X } from "lucide-react";
+import { useState } from "react";
 import { Input } from "@/ui/input";
 import { SearchResultsPopup } from "./SearchResultsPopup";
 

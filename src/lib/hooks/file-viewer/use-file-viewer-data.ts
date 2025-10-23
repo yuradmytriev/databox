@@ -1,10 +1,6 @@
 import type { DataRoomNode } from "@/types/dataroom";
 import { useAuth } from "@/lib/auth/use-auth";
-import {
-  useChildren,
-  useNode,
-  useRootNodes,
-} from "@/lib/hooks/dataroom";
+import { useChildren, useNode, useRootNodes } from "@/lib/hooks/dataroom";
 import { useNodeSorting } from "@/lib/hooks/nodes";
 import { useDataRoomUIStore } from "@/state/ui/dataroom-ui";
 
