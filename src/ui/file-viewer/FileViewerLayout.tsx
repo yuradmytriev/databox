@@ -82,10 +82,8 @@ export const FileViewerLayout = ({
           className="flex-1 min-h-0 p-6"
           data-testid="file-viewer-content-area"
           onDragOver={(e) => {
-            if (draggedNodeId) {
-              e.preventDefault();
-              e.dataTransfer.dropEffect = "move";
-            }
+            e.preventDefault();
+            e.dataTransfer.dropEffect = draggedNodeId ? "move" : "copy";
           }}
           onDrop={onBackgroundDrop}
         >

@@ -3,6 +3,7 @@
 Link: https://databox-af6.pages.dev/ (used github action for testing and deployment to cloudflare)
 
 ![DataRoom Demo](./records/demo.gif)
+![DataRoom Demo 2 (undo and dnd)](./records/demo2.gif)
 
 So here's what I built for this demo:
 

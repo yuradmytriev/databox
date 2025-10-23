@@ -184,7 +184,11 @@ export class DexieDataRoomManager implements IDataRoomManager {
 
       if (hasDuplicate) {
         const errorMessage = `A DataRoom with the name "${trimmedName}" already exists`;
-        logger.error(errorMessage, { id, name: trimmedName, ownerId: dataRoom.ownerId });
+        logger.error(errorMessage, {
+          id,
+          name: trimmedName,
+          ownerId: dataRoom.ownerId,
+        });
         throw new Error(errorMessage);
       }
 

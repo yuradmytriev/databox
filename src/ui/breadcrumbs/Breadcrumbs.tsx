@@ -101,7 +101,10 @@ export const Breadcrumbs = () => {
   };
 
   return (
-    <div className="py-3 px-6 border-b h-[52px] flex items-center" data-testid="breadcrumbs">
+    <div
+      className="py-3 px-6 border-b h-[52px] flex items-center"
+      data-testid="breadcrumbs"
+    >
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
