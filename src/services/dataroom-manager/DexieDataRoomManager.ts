@@ -169,11 +169,30 @@ export class DexieDataRoomManager implements IDataRoomManager {
         throw new Error(errorMessage);
       }
 
-      dataRoom.name = name;
+      const trimmedName = name.trim();
+      if (!trimmedName) {
+        const errorMessage = "DataRoom name cannot be empty";
+        logger.error(errorMessage, { id });
+        throw new Error(errorMessage);
+      }
+
+      // Check for duplicate names in the same owner's datarooms
+      const ownerDataRooms = await this.getDataRoomsByOwner(dataRoom.ownerId);
+      const hasDuplicate = ownerDataRooms.some(
+        (dr) => dr.id !== id && dr.name === trimmedName,
+      );
+
+      if (hasDuplicate) {
+        const errorMessage = `A DataRoom with the name "${trimmedName}" already exists`;
+        logger.error(errorMessage, { id, name: trimmedName, ownerId: dataRoom.ownerId });
+        throw new Error(errorMessage);
+      }
+
+      dataRoom.name = trimmedName;
       dataRoom.updatedAt = dateManager.now();
 
       await this.db.datarooms.put(dataRoom);
-      logger.info("DataRoom updated", { dataRoomId: id, name });
+      logger.info("DataRoom updated", { dataRoomId: id, name: trimmedName });
 
       return dataRoom;
     } catch (error) {

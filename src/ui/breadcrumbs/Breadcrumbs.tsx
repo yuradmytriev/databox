@@ -101,7 +101,7 @@ export const Breadcrumbs = () => {
   };
 
   return (
-    <div className="py-3 px-6 border-b" data-testid="breadcrumbs">
+    <div className="py-3 px-6 border-b h-[52px] flex items-center" data-testid="breadcrumbs">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -137,7 +137,7 @@ export const Breadcrumbs = () => {
                   <BreadcrumbItem>
                     <DropdownMenu>
                       <DropdownMenuTrigger
-                        className="flex h-9 w-9 items-center justify-center"
+                        className="flex items-center justify-center"
                         aria-label="Show hidden breadcrumb items"
                       >
                         <BreadcrumbEllipsis className="h-4 w-4" />
