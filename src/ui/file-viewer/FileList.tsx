@@ -97,8 +97,6 @@ export const FileList = ({ nodes, onStartEditing }: FileListProps) => {
           ? `${folderPath}/${currentNode.id}`
           : currentNode.id;
         navigate(`/dataroom/${dataRoomId}/folder/${newPath}`);
-      } else if (currentNode.type === "file") {
-        setViewingFileId(currentNode.id);
       }
     } else if (event.key === " ") {
       event.preventDefault();

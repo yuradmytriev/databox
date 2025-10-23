@@ -134,17 +134,17 @@ export const FileViewerToolbar = ({
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".pdf,application/pdf"
-              multiple
-              onChange={onFileSelect}
-              className="hidden"
-            />
           </>
         )}
       </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".pdf,application/pdf"
+        multiple
+        onChange={onFileSelect}
+        className="hidden"
+      />
     </div>
   );
 };
