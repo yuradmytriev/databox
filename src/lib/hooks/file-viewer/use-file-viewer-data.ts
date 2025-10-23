@@ -4,10 +4,8 @@ import {
   useChildren,
   useNode,
   useRootNodes,
-  useSearchNodes,
 } from "@/lib/hooks/dataroom";
 import { useNodeSorting } from "@/lib/hooks/nodes";
-import { useFilterStore } from "@/state/filter";
 import { useDataRoomUIStore } from "@/state/ui/dataroom-ui";
 
 export interface FileViewerData {
@@ -27,7 +25,6 @@ export const useFileViewerData = (
     (state) => state.currentDataRoomId,
   );
   const selectedNodeId = useDataRoomUIStore((state) => state.selectedNodeId);
-  const { searchQuery } = useFilterStore();
 
   const { data: rootNodes, isLoading: rootLoading } = useRootNodes(
     currentDataRoomId,
@@ -36,11 +33,6 @@ export const useFileViewerData = (
   const { data: childNodes, isLoading: childLoading } = useChildren(
     currentDataRoomId,
     selectedNodeId,
-    user?.id ?? "",
-  );
-  const { data: searchResults, isLoading: searchLoading } = useSearchNodes(
-    currentDataRoomId,
-    searchQuery,
     user?.id ?? "",
   );
 
@@ -55,19 +47,10 @@ export const useFileViewerData = (
     user?.id ?? "",
   );
 
-  const isSearchMode = !!searchQuery;
   const isChildMode = !!selectedNodeId;
 
-  const rawNodes = isSearchMode
-    ? searchResults
-    : isChildMode
-      ? childNodes
-      : rootNodes;
-  const isLoading = isSearchMode
-    ? searchLoading
-    : isChildMode
-      ? childLoading
-      : rootLoading;
+  const rawNodes = isChildMode ? childNodes : rootNodes;
+  const isLoading = isChildMode ? childLoading : rootLoading;
 
   const nodes = useNodeSorting(rawNodes);
 
